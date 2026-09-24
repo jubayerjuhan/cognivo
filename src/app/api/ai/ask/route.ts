@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { handler, HttpError, requireUser } from "@/lib/api";
 import { loadSourceText } from "@/lib/ai-source";
-import { generate } from "@/lib/gemini";
+import { generate } from "@/lib/ai";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;

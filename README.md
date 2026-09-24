@@ -4,12 +4,12 @@ AI-powered knowledge workspace for students and researchers.
 
 - **Notes** — rich-text notes with [BlockNote](https://www.blocknotejs.org/) (headings, lists, code blocks, tables, images), autosave, title search
 - **PDF attachments** — upload PDFs to a note; text is extracted with `pdf-parse`
-- **AI assistant** (Google Gemini) — summarize a note or PDF, generate 5 flashcards, ask questions about a PDF/note
+- **AI assistant** (Groq) — summarize a note or PDF, generate 5 flashcards, ask questions about a PDF/note
 - **Whiteboard** — [Excalidraw](https://excalidraw.com/) canvas with manual save (Ctrl/Cmd+S), polling for changes saved elsewhere, and "last saved by" info
 - **Tasks** — to-do list with due dates and completion
 - **Dashboard** — counts for notes, tasks, completed tasks, AI calls, plus a 7-day AI usage chart
 
-Stack: Next.js 14 (App Router) · MongoDB/Mongoose · Clerk · Tailwind CSS · Gemini API · Vercel.
+Stack: Next.js 14 (App Router) · MongoDB/Mongoose · Clerk · Tailwind CSS · Groq API · Vercel.
 
 ## Setup
 
@@ -24,7 +24,7 @@ Stack: Next.js 14 (App Router) · MongoDB/Mongoose · Clerk · Tailwind CSS · G
    - **Clerk**: create an app at <https://dashboard.clerk.com>, copy the publishable + secret keys.
    - **MongoDB**: create a free Atlas cluster, copy the connection string (include a db name, e.g. `/cognivo`).
      In Atlas → Network Access, allow `0.0.0.0/0` so Vercel can connect.
-   - **Gemini**: create a key at <https://aistudio.google.com/apikey>. `GEMINI_MODEL` defaults to `gemini-3.6-flash`.
+   - **Groq**: create a key at <https://console.groq.com/keys>. `GROQ_MODEL` defaults to `openai/gpt-oss-120b`.
 3. Run it:
    ```bash
    npm run dev
@@ -54,7 +54,7 @@ src/
     api/              route handlers: notes, attachments, ai/{summarize,quiz,ask}, whiteboard, tasks
     sign-in, sign-up  Clerk auth pages
   components/         Sidebar, NoteEditor, AiPanel, Flashcards, WhiteboardCanvas, AiUsageChart
-  lib/                db connection, auth/route helpers, Gemini client, BlockNote→text
+  lib/                db connection, auth/route helpers, Groq AI client, BlockNote→text
   models/             Mongoose schemas: Note, Attachment, Whiteboard, Task, AiCall
   middleware.ts       Clerk route protection
 ```
