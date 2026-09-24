@@ -1,6 +1,6 @@
 import { HttpError, isValidId } from "./api";
 import { blocksToText } from "./blocknote-text";
-import { truncate } from "./gemini";
+import { truncate } from "./ai";
 import { Note } from "@/models/Note";
 import { Attachment } from "@/models/Attachment";
 

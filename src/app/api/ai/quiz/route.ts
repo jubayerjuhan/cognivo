@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { handler, HttpError, requireUser } from "@/lib/api";
 import { loadSourceText } from "@/lib/ai-source";
-import { generate } from "@/lib/gemini";
+import { generate } from "@/lib/ai";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -13,7 +13,7 @@ export const POST = handler(async (req: Request) => {
   const src = await loadSourceText(userId, await req.json());
 
   const prompt = `Create exactly 5 flashcards that test understanding of the most important ideas in the content below.
-Respond ONLY with a JSON array of objects: [{"question": "...", "answer": "..."}].
+Respond ONLY with a JSON object of the form {"cards": [{"question": "...", "answer": "..."}]}.
 Keep answers concise (1-3 sentences).
 
 CONTENT:
