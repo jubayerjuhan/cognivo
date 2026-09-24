@@ -24,7 +24,7 @@ Stack: Next.js 14 (App Router) · MongoDB/Mongoose · Clerk · Tailwind CSS · G
    - **Clerk**: create an app at <https://dashboard.clerk.com>, copy the publishable + secret keys.
    - **MongoDB**: create a free Atlas cluster, copy the connection string (include a db name, e.g. `/cognivo`).
      In Atlas → Network Access, allow `0.0.0.0/0` so Vercel can connect.
-   - **Gemini**: create a key at <https://aistudio.google.com/apikey>. `GEMINI_MODEL` defaults to `gemini-2.5-flash`.
+   - **Gemini**: create a key at <https://aistudio.google.com/apikey>. `GEMINI_MODEL` defaults to `gemini-3.6-flash`.
 3. Run it:
    ```bash
    npm run dev
