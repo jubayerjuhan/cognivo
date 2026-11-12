@@ -18,37 +18,31 @@ import {
 const features = [
   {
     icon: NotebookPen,
-    chip: "bg-indigo-600 shadow-indigo-200",
     title: "Rich notes",
     text: "A beautiful block editor for lecture notes, research and ideas — headings, lists, checklists and more, auto-saved as you type.",
   },
   {
     icon: Paperclip,
-    chip: "bg-sky-500 shadow-sky-200",
     title: "PDF attachments",
     text: "Attach PDFs to any note. Cognivo extracts the text automatically, so your documents become searchable, askable knowledge.",
   },
   {
     icon: Sparkles,
-    chip: "bg-violet-600 shadow-violet-200",
     title: "AI assistant",
     text: "Summarize a note in seconds, then ask questions about it — answers come from your own material, not the open web.",
   },
   {
     icon: Layers,
-    chip: "bg-emerald-500 shadow-emerald-200",
     title: "Instant flashcards",
     text: "Turn any note into a quiz with one click. Flip through flashcards generated from your content and actually retain it.",
   },
   {
     icon: Brush,
-    chip: "bg-rose-500 shadow-rose-200",
     title: "Whiteboard",
     text: "Sketch diagrams, mind maps and flows on an infinite canvas that lives right beside your notes.",
   },
   {
     icon: ListTodo,
-    chip: "bg-amber-500 shadow-amber-200",
     title: "Tasks & dashboard",
     text: "Due dates, completion tracking and an overview of everything — including how much AI help you have used.",
   },
@@ -57,19 +51,16 @@ const features = [
 const steps = [
   {
     icon: FileText,
-    chip: "bg-indigo-600 shadow-indigo-200",
     title: "1. Capture",
     text: "Write rich notes or drop in a PDF. Everything is stored in your private workspace.",
   },
   {
     icon: Sparkles,
-    chip: "bg-violet-600 shadow-violet-200",
     title: "2. Understand",
     text: "AI reads your material and gives you summaries, key points and straight answers to your questions.",
   },
   {
     icon: Zap,
-    chip: "bg-fuchsia-600 shadow-fuchsia-200",
     title: "3. Retain",
     text: "Generate flashcards, tick off tasks and watch your dashboard fill up as your knowledge grows.",
   },
@@ -104,42 +95,38 @@ export default async function Home() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-slate-950">
-        <div className="pointer-events-none absolute -top-32 right-0 h-96 w-96 rounded-full bg-violet-600/40 blur-3xl" aria-hidden />
-        <div className="pointer-events-none absolute -left-32 top-40 h-96 w-96 rounded-full bg-fuchsia-600/25 blur-3xl" aria-hidden />
-        <div className="pointer-events-none absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-amber-500/15 blur-3xl" aria-hidden />
+      <section className="relative overflow-hidden">
         <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-6 sm:pt-20">
           <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold text-indigo-200">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
               <Sparkles className="h-3.5 w-3.5" aria-hidden /> AI-powered knowledge workspace
             </span>
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
               Your second brain,
-              <span className="block bg-gradient-to-r from-violet-400 via-fuchsia-400 to-amber-300 bg-clip-text text-transparent">
+              <span className="block text-indigo-600">
                 supercharged by AI
               </span>
             </h1>
-            <p className="mx-auto mt-5 max-w-xl text-base text-slate-300 sm:text-lg">
+            <p className="mx-auto mt-5 max-w-xl text-base text-slate-500 sm:text-lg">
               Take rich notes, attach PDFs, and let AI summarize, quiz and answer
               questions about your own material — all in one calm workspace.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link href="/sign-up" className="inline-flex items-center justify-center gap-1.5 rounded-md bg-amber-400 px-6 py-3 text-base font-semibold text-slate-900 shadow-lg shadow-amber-400/25 transition hover:bg-amber-300">
+              <Link href="/sign-up" className="btn-primary px-6 py-3 text-base">
                 Start learning free <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
-              <a href="#features" className="inline-flex items-center justify-center gap-1.5 rounded-md border border-white/25 bg-white/5 px-6 py-3 text-base font-medium text-white transition hover:bg-white/10">See features</a>
+              <a href="#features" className="btn-secondary px-6 py-3 text-base">See features</a>
             </div>
-            <p className="mt-4 text-xs text-slate-500">Free to use · No credit card · Works on any device</p>
+            <p className="mt-4 text-xs text-slate-400">Free to use · No credit card · Works on any device</p>
           </div>
 
           {/* Product preview */}
           <div className="relative mx-auto mt-14 max-w-4xl">
-            <div className="pointer-events-none absolute -inset-4 rounded-[28px] bg-gradient-to-r from-violet-600/40 via-fuchsia-500/30 to-amber-400/30 blur-2xl" aria-hidden />
-            <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-white shadow-2xl shadow-black/50">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/70">
               <div className="flex items-center gap-2 border-b border-slate-100 bg-slate-50 px-4 py-2.5">
-                <span className="h-3 w-3 rounded-full bg-red-400" />
-                <span className="h-3 w-3 rounded-full bg-amber-400" />
-                <span className="h-3 w-3 rounded-full bg-emerald-400" />
+                <span className="h-3 w-3 rounded-full bg-slate-300" />
+                <span className="h-3 w-3 rounded-full bg-slate-300" />
+                <span className="h-3 w-3 rounded-full bg-slate-300" />
                 <span className="ml-3 hidden rounded-md bg-white px-3 py-1 text-xs text-slate-400 ring-1 ring-slate-200 sm:block">
                   cognivo / notes / photosynthesis
                 </span>
@@ -159,11 +146,11 @@ export default async function Home() {
                     <div className="h-2.5 w-10/12 rounded bg-slate-100" />
                   </div>
                   <ul className="mt-5 space-y-2 text-sm text-slate-600">
-                    <li className="flex items-center gap-2"><span className="flex h-4 w-4 items-center justify-center rounded bg-emerald-500 text-white"><Check className="h-3 w-3" aria-hidden /></span> Light-dependent reactions — ATP + NADPH</li>
-                    <li className="flex items-center gap-2"><span className="flex h-4 w-4 items-center justify-center rounded bg-emerald-500 text-white"><Check className="h-3 w-3" aria-hidden /></span> Calvin cycle fixes carbon into glucose</li>
+                    <li className="flex items-center gap-2"><span className="flex h-4 w-4 items-center justify-center rounded bg-indigo-600 text-white"><Check className="h-3 w-3" aria-hidden /></span> Light-dependent reactions — ATP + NADPH</li>
+                    <li className="flex items-center gap-2"><span className="flex h-4 w-4 items-center justify-center rounded bg-indigo-600 text-white"><Check className="h-3 w-3" aria-hidden /></span> Calvin cycle fixes carbon into glucose</li>
                     <li className="flex items-center gap-2"><span className="h-4 w-4 rounded border border-slate-300" /> Factors: light intensity, CO₂, temperature</li>
                   </ul>
-                  <div className="mt-6 rounded-xl bg-gradient-to-br from-indigo-50 to-violet-50 p-4 ring-1 ring-indigo-100">
+                  <div className="mt-6 rounded-xl bg-indigo-50 p-4 ring-1 ring-indigo-100">
                     <p className="flex items-center gap-2 text-sm font-semibold text-indigo-900">
                       <Sparkles className="h-4 w-4 text-indigo-600" aria-hidden /> AI Summary
                     </p>
@@ -194,7 +181,7 @@ export default async function Home() {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((f) => (
               <div key={f.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md">
-                <span className={`flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-lg ${f.chip}`}>
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
                   <f.icon className="h-5 w-5" aria-hidden />
                 </span>
                 <h3 className="mt-4 font-semibold text-slate-900">{f.title}</h3>
@@ -212,7 +199,7 @@ export default async function Home() {
           <div className="mt-12 grid gap-8 md:grid-cols-3">
             {steps.map((s) => (
               <div key={s.title} className="text-center">
-                <span className={`mx-auto flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-lg ${s.chip}`}>
+                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white">
                   <s.icon className="h-5 w-5" aria-hidden />
                 </span>
                 <h3 className="mt-4 font-semibold text-slate-900">{s.title}</h3>
@@ -225,7 +212,7 @@ export default async function Home() {
 
       {/* AI spotlight */}
       <section id="ai" className="px-4 pb-16 sm:px-6 sm:pb-20">
-        <div className="mx-auto max-w-6xl rounded-3xl bg-gradient-to-br from-indigo-700 via-violet-700 to-fuchsia-700 px-6 py-12 text-white shadow-xl shadow-violet-200 sm:px-12">
+        <div className="mx-auto max-w-6xl rounded-3xl bg-slate-900 px-6 py-12 text-white sm:px-12">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-indigo-200">
@@ -242,7 +229,7 @@ export default async function Home() {
               </Link>
             </div>
             <div className="space-y-3">
-              <div className="ml-auto w-fit max-w-full rounded-2xl rounded-br-sm bg-slate-950/60 px-4 py-2.5 text-sm ring-1 ring-white/15">
+              <div className="ml-auto w-fit max-w-full rounded-2xl rounded-br-sm bg-indigo-600 px-4 py-2.5 text-sm">
                 Summarize my biology notes
               </div>
               <div className="w-fit max-w-full rounded-2xl rounded-bl-sm bg-white/10 px-4 py-3 text-sm leading-relaxed text-slate-200 ring-1 ring-white/10">
@@ -250,7 +237,7 @@ export default async function Home() {
                 photosynthesis in two stages — light reactions in the thylakoid membrane and
                 the Calvin cycle in the stroma…
               </div>
-              <div className="ml-auto w-fit max-w-full rounded-2xl rounded-br-sm bg-slate-950/60 px-4 py-2.5 text-sm ring-1 ring-white/15">
+              <div className="ml-auto w-fit max-w-full rounded-2xl rounded-br-sm bg-indigo-600 px-4 py-2.5 text-sm">
                 Make a quiz from this
               </div>
               <div className="w-fit max-w-full rounded-2xl rounded-bl-sm bg-white/10 px-4 py-3 text-sm text-slate-200 ring-1 ring-white/10">
@@ -264,12 +251,12 @@ export default async function Home() {
 
       {/* CTA */}
       <section className="px-4 pb-20 sm:px-6">
-        <div className="mx-auto max-w-6xl rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 px-6 py-14 text-center text-white shadow-xl shadow-fuchsia-200">
+        <div className="mx-auto max-w-6xl px-6 py-14 text-center">
           <h2 className="text-3xl font-bold tracking-tight">Start learning smarter today</h2>
-          <p className="mx-auto mt-3 max-w-md text-indigo-100">
+          <p className="mx-auto mt-3 max-w-md text-slate-500">
             Create your free workspace and turn your first note into a summary in under a minute.
           </p>
-          <Link href="/sign-up" className="mt-7 inline-flex items-center gap-1.5 rounded-md bg-white px-6 py-3 text-base font-semibold text-indigo-700 transition hover:bg-indigo-50">
+          <Link href="/sign-up" className="btn-primary mt-7 px-6 py-3 text-base">
             Get started free <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>
         </div>
