@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import toast from "react-hot-toast";
 import { api, errMsg } from "@/lib/fetcher";
 import { Flashcards, type Card } from "./Flashcards";
+import { Layers, Paperclip, Sparkles, X } from "lucide-react";
 
 export type Attachment = {
   _id: string;
@@ -34,8 +35,10 @@ export function AiPanel({
   const [source, setSource] = useState<string>("note");
   const [busy, setBusy] = useState<null | "summary" | "quiz" | "answer">(null);
   const [result, setResult] = useState<Result | null>(null);
+
   const [question, setQuestion] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [deckSaved, setDeckSaved] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const fromPdf = source !== "note";
@@ -43,6 +46,7 @@ export function AiPanel({
 
   async function run(kind: "summary" | "quiz" | "answer") {
     setBusy(kind);
+    setDeckSaved(false);
     try {
       if (!fromPdf) await beforeAi(); // make sure the latest note text is saved first
       if (kind === "summary") {
@@ -89,7 +93,7 @@ export function AiPanel({
       setAttachments((a) => [att, ...a]);
       setSource(att._id);
       if (att.hasText) toast.success(`Uploaded ${att.fileName}`);
-      else toast("Uploaded, but no text could be extracted (scanned PDF?)", { icon: "⚠️" });
+      else toast("Uploaded, but no text could be extracted (scanned PDF?)");
     } catch (e) {
       toast.error(errMsg(e));
     } finally {
@@ -114,7 +118,7 @@ export function AiPanel({
       {/* Attachments */}
       <div className="border-b border-slate-200 p-4">
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-semibold">📎 PDF attachments</h2>
+          <h2 className="flex items-center gap-2 font-semibold"><Paperclip className="h-4 w-4" aria-hidden /> PDF attachments</h2>
           <button className="btn-secondary" onClick={() => fileInput.current?.click()} disabled={uploading}>
             {uploading ? "Uploading…" : "Upload PDF"}
           </button>
@@ -143,8 +147,8 @@ export function AiPanel({
                 </a>
                 <span className="flex shrink-0 items-center gap-2 text-xs text-slate-400">
                   {a.pages}p · {(a.size / 1024).toFixed(0)}KB
-                  <button className="text-red-500 hover:text-red-700" onClick={() => remove(a)} title="Delete">
-                    ✕
+                  <button className="text-red-500 hover:text-red-700" onClick={() => remove(a)} title="Delete" aria-label="Delete attachment">
+                    <X className="h-4 w-4" aria-hidden />
                   </button>
                 </span>
               </li>
@@ -155,7 +159,7 @@ export function AiPanel({
 
       {/* AI assistant */}
       <div className="space-y-3 p-4">
-        <h2 className="font-semibold">✨ AI Assistant</h2>
+        <h2 className="flex items-center gap-2 font-semibold"><Sparkles className="h-4 w-4" aria-hidden /> AI Assistant</h2>
         <label className="block text-xs font-medium text-slate-600">
           Source
           <select className="input mt-1" value={source} onChange={(e) => setSource(e.target.value)}>
@@ -183,7 +187,7 @@ export function AiPanel({
           }}
         >
           <input
-            className="input"
+            className="input min-w-0 flex-1"
             placeholder={fromPdf ? "Ask a question about this PDF…" : "Ask a question about this note…"}
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
@@ -209,7 +213,34 @@ export function AiPanel({
               <p className="mb-2 text-xs italic text-slate-500">Q: {result.question}</p>
             )}
             {result.type === "quiz" ? (
-              <Flashcards cards={result.cards} />
+              <>
+                <Flashcards cards={result.cards} />
+                {!deckSaved ? (
+                  <button
+                    className="btn-secondary mt-3 w-full"
+                    onClick={async () => {
+                      try {
+                        await api("/api/decks", {
+                          method: "POST",
+                          body: JSON.stringify({
+                            title: `${result.source} — flashcards`,
+                            noteId: result.fromPdf ? "" : noteId,
+                            cards: result.cards,
+                          }),
+                        });
+                        setDeckSaved(true);
+                        toast.success("Saved as a deck — find it under Review");
+                      } catch (e) {
+                        toast.error(errMsg(e));
+                      }
+                    }}
+                  >
+                    <Layers className="h-4 w-4" aria-hidden /> Save as deck for spaced review
+                  </button>
+                ) : (
+                  <p className="mt-3 text-center text-xs font-medium text-emerald-600">Saved to Review</p>
+                )}
+              </>
             ) : (
               <div className="prose prose-sm max-w-none">
                 <ReactMarkdown>{result.text}</ReactMarkdown>

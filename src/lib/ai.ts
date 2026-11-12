@@ -1,6 +1,7 @@
 import Groq, { APIError } from "groq-sdk";
 import { HttpError } from "./api";
 import { AiCall } from "@/models/AiCall";
+import { rateLimited } from "./rate-limit";
 
 // Groq free tier allows ~8k tokens/min (prompt + output), so cap input at ~5k tokens; no RAG, just the (truncated) full text.
 export const MAX_CHARS = 20_000;
@@ -19,10 +20,13 @@ function getClient() {
 
 export async function generate(
   userId: string,
-  kind: "summarize" | "quiz" | "ask",
+  kind: "summarize" | "quiz" | "ask" | "askAll" | "autotag" | "transcribe",
   prompt: string,
   json = false
 ) {
+  if (rateLimited("ai:" + userId, 20, 60_000)) {
+    throw new HttpError(429, "Too many AI requests - please wait a minute and try again.");
+  }
   let text: string;
   try {
     const res = await getClient().chat.completions.create({

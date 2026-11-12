@@ -15,6 +15,7 @@ export const POST = handler(async (req: Request) => {
   const body = await req.json();
   const title = typeof body.title === "string" ? body.title.trim() : "";
   if (!title) throw new HttpError(400, "Title is required");
-  const task = await Task.create({ userId, title, dueDate: body.dueDate || null });
+  const repeat = ["daily", "weekly"].includes(body.repeat) ? body.repeat : "none";
+  const task = await Task.create({ userId, title, dueDate: body.dueDate || null, repeat });
   return NextResponse.json(task, { status: 201 });
 });

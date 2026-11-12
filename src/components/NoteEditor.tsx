@@ -5,6 +5,7 @@ import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import type { PartialBlock } from "@blocknote/core";
+import { useEffect, useState } from "react";
 
 const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 
@@ -26,6 +27,14 @@ export default function NoteEditor({
   initialContent: unknown[];
   onChange: (blocks: unknown[]) => void;
 }) {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  useEffect(() => {
+    const read = () => setTheme(document.documentElement.classList.contains("dark") ? "dark" : "light");
+    read();
+    window.addEventListener("cognivo-theme", read);
+    return () => window.removeEventListener("cognivo-theme", read);
+  }, []);
+
   const editor = useCreateBlockNote({
     initialContent: initialContent.length ? (initialContent as PartialBlock[]) : undefined,
     uploadFile,
@@ -34,7 +43,7 @@ export default function NoteEditor({
   return (
     <BlockNoteView
       editor={editor}
-      theme="light"
+      theme={theme}
       onChange={() => onChange(editor.document)}
     />
   );

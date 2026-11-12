@@ -1,6 +1,6 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { connectDB } from "./db";
+import { getSessionUser, getSessionUserId } from "./auth";
 
 export class HttpError extends Error {
   constructor(public status: number, message: string) {
@@ -10,21 +10,16 @@ export class HttpError extends Error {
 
 /** Returns the signed-in user's id (and connects to MongoDB) or throws 401. */
 export async function requireUser() {
-  const { userId } = await auth();
+  const userId = getSessionUserId();
   if (!userId) throw new HttpError(401, "Unauthorized");
   await connectDB();
   return userId;
 }
 
 export async function currentUserName() {
-  const user = await currentUser();
+  const user = await getSessionUser();
   if (!user) return "Unknown";
-  return (
-    user.fullName ||
-    user.username ||
-    user.primaryEmailAddress?.emailAddress ||
-    "Unknown"
-  );
+  return user.name || user.email || "Unknown";
 }
 
 /** Wraps a route handler so thrown errors become JSON responses. */

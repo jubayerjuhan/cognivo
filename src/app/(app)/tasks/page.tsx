@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { api, errMsg } from "@/lib/fetcher";
+import { Repeat, X } from "lucide-react";
 
-type Task = { _id: string; title: string; dueDate: string | null; completed: boolean };
+type Task = { _id: string; title: string; dueDate: string | null; completed: boolean; repeat?: "none" | "daily" | "weekly" };
 
 function sortTasks(list: Task[]) {
   return [...list].sort((a, b) => {
@@ -30,6 +31,7 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [title, setTitle] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [repeat, setRepeat] = useState<"none" | "daily" | "weekly">("none");
   const [adding, setAdding] = useState(false);
   const [filter, setFilter] = useState<"all" | "active" | "done">("all");
 
@@ -46,11 +48,12 @@ export default function TasksPage() {
     try {
       const task = await api<Task>("/api/tasks", {
         method: "POST",
-        body: JSON.stringify({ title, dueDate: dueDate || null }),
+        body: JSON.stringify({ title, dueDate: dueDate || null, repeat }),
       });
       setTasks((t) => sortTasks([task, ...(t ?? [])]));
       setTitle("");
       setDueDate("");
+      setRepeat("none");
     } catch (e) {
       toast.error(errMsg(e));
     } finally {
@@ -66,6 +69,12 @@ export default function TasksPage() {
         method: "PATCH",
         body: JSON.stringify({ completed: !task.completed }),
       });
+      // A completed recurring task spawns its next occurrence server-side — refetch to show it.
+      if (!task.completed && task.repeat && task.repeat !== "none") {
+        const fresh = await api<Task[]>("/api/tasks");
+        setTasks(sortTasks(fresh));
+        toast.success("Done — next occurrence created");
+      }
     } catch (e) {
       toast.error(errMsg(e));
       setTasks((t) => sortTasks(t!.map((x) => (x._id === task._id ? task : x))));
@@ -87,9 +96,9 @@ export default function TasksPage() {
   const doneCount = (tasks ?? []).filter((t) => t.completed).length;
 
   return (
-    <div className="mx-auto max-w-3xl p-6">
+    <div className="mx-auto max-w-3xl p-4 sm:p-6">
       <div className="mb-6 flex items-baseline justify-between">
-        <h1 className="text-2xl font-bold">Tasks</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">Tasks</h1>
         {tasks && (
           <span className="text-sm text-slate-500">
             {doneCount}/{tasks.length} completed
@@ -99,17 +108,27 @@ export default function TasksPage() {
 
       <form onSubmit={addTask} className="card mb-4 flex flex-wrap gap-2 p-3">
         <input
-          className="input min-w-0 flex-1"
+          className="input min-w-0 flex-1 basis-full sm:basis-auto"
           placeholder="What needs to be done?"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <input
           type="date"
-          className="input w-40"
+          className="input w-full min-w-0 flex-1 sm:w-40 sm:flex-none"
           value={dueDate}
           onChange={(e) => setDueDate(e.target.value)}
         />
+        <select
+          className="input basis-full sm:basis-auto sm:w-36"
+          value={repeat}
+          onChange={(e) => setRepeat(e.target.value as "none" | "daily" | "weekly")}
+          title="Repeat"
+        >
+          <option value="none">No repeat</option>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+        </select>
         <button className="btn-primary" disabled={adding || !title.trim()}>
           Add
         </button>
@@ -136,15 +155,20 @@ export default function TasksPage() {
       ) : (
         <ul className="card divide-y divide-slate-100">
           {visible.map((t) => (
-            <li key={t._id} className="group flex items-center gap-3 px-4 py-3">
+            <li key={t._id} className="group flex flex-wrap items-center gap-3 px-4 py-3">
               <input
                 type="checkbox"
                 checked={t.completed}
                 onChange={() => toggle(t)}
                 className="h-4 w-4 accent-indigo-600"
               />
-              <span className={`flex-1 text-sm ${t.completed ? "text-slate-400 line-through" : ""}`}>
+              <span className={`min-w-0 flex-1 break-words text-sm ${t.completed ? "text-slate-400 line-through" : ""}`}>
                 {t.title}
+                {t.repeat && t.repeat !== "none" && (
+                  <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 align-middle text-[11px] font-medium text-indigo-700">
+                    <Repeat className="h-3 w-3" aria-hidden /> {t.repeat}
+                  </span>
+                )}
               </span>
               {t.dueDate && (
                 <span className={`text-xs ${isOverdue(t) ? "font-semibold text-red-600" : "text-slate-500"}`}>
@@ -154,10 +178,11 @@ export default function TasksPage() {
               )}
               <button
                 onClick={() => remove(t)}
-                className="text-slate-300 opacity-0 hover:text-red-600 group-hover:opacity-100"
+                className="shrink-0 text-slate-300 hover:text-red-600 lg:opacity-0 lg:group-hover:opacity-100"
                 title="Delete"
+                aria-label="Delete task"
               >
-                ✕
+                <X className="h-4 w-4" aria-hidden />
               </button>
             </li>
           ))}

@@ -6,6 +6,10 @@ const NoteSchema = new Schema(
     title: { type: String, default: "Untitled" },
     // BlockNote document (array of blocks) stored as-is.
     content: { type: Schema.Types.Mixed, default: [] },
+    tags: { type: [String], default: [] },
+    folder: { type: String, default: "", index: true },
+    shared: { type: Boolean, default: false },
+    shareId: { type: String, default: "", index: true },
   },
   { timestamps: true, minimize: false }
 );

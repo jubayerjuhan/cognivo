@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Excalidraw, getSceneVersion } from "@excalidraw/excalidraw";
+import { Excalidraw, exportToBlob, getSceneVersion } from "@excalidraw/excalidraw";
 import type { ExcalidrawImperativeAPI, BinaryFiles } from "@excalidraw/excalidraw/types/types";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
 import toast from "react-hot-toast";
@@ -9,8 +9,9 @@ import { api, errMsg } from "@/lib/fetcher";
 
 const POLL_MS = 8000;
 
-type Meta = { updatedAt: string | null; lastEditedBy: string; lastClientId: string };
+type Meta = { updatedAt: string | null; lastEditedBy: string; lastClientId: string; noteId?: string };
 type Scene = Meta & { elements: ExcalidrawElement[]; files: BinaryFiles };
+type NoteLite = { _id: string; title: string };
 
 export default function WhiteboardCanvas() {
   const [excalidrawAPI, setExcalidrawAPI] = useState<ExcalidrawImperativeAPI | null>(null);
@@ -19,6 +20,8 @@ export default function WhiteboardCanvas() {
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [remoteChange, setRemoteChange] = useState<Meta | null>(null);
+  const [notesList, setNotesList] = useState<NoteLite[]>([]);
+  const [linkedNote, setLinkedNote] = useState("");
 
   // Unique per browser tab, so polling can tell our own saves apart from others'.
   const clientId = useRef(Math.random().toString(36).slice(2));
@@ -30,11 +33,54 @@ export default function WhiteboardCanvas() {
       .then((scene) => {
         setInitial(scene);
         setMeta(scene);
+        setLinkedNote(scene.noteId ?? "");
         knownUpdatedAt.current = scene.updatedAt;
         savedVersion.current = getSceneVersion(scene.elements);
       })
       .catch((e) => toast.error(errMsg(e)));
   }, []);
+
+  useEffect(() => {
+    api<NoteLite[]>("/api/notes").then(setNotesList).catch(() => {});
+  }, []);
+
+  async function linkNote(noteId: string) {
+    if (!excalidrawAPI) return;
+    try {
+      await api("/api/whiteboard", {
+        method: "PUT",
+        body: JSON.stringify({
+          elements: excalidrawAPI.getSceneElements(),
+          files: excalidrawAPI.getFiles(),
+          clientId: clientId.current,
+          noteId,
+        }),
+      });
+      setLinkedNote(noteId);
+      toast.success(noteId ? "Whiteboard linked to note" : "Whiteboard unlinked");
+    } catch (e) {
+      toast.error(errMsg(e));
+    }
+  }
+
+  async function exportPng() {
+    if (!excalidrawAPI) return;
+    try {
+      const blob = await exportToBlob({
+        elements: excalidrawAPI.getSceneElements(),
+        files: excalidrawAPI.getFiles(),
+        appState: { exportBackground: true },
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cognivo-whiteboard.png";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      toast.error(errMsg(e));
+    }
+  }
 
   const save = useCallback(async () => {
     if (!excalidrawAPI) return;
@@ -43,7 +89,7 @@ export default function WhiteboardCanvas() {
       const elements = excalidrawAPI.getSceneElements();
       const m = await api<Meta>("/api/whiteboard", {
         method: "PUT",
-        body: JSON.stringify({ elements, files: excalidrawAPI.getFiles(), clientId: clientId.current }),
+        body: JSON.stringify({ elements, files: excalidrawAPI.getFiles(), clientId: clientId.current, noteId: linkedNote }),
       });
       knownUpdatedAt.current = m.updatedAt;
       // onChange reports versions including deleted elements, so compare against the same set.
@@ -57,7 +103,7 @@ export default function WhiteboardCanvas() {
     } finally {
       setSaving(false);
     }
-  }, [excalidrawAPI]);
+  }, [excalidrawAPI, linkedNote]);
 
   const refresh = useCallback(async () => {
     if (!excalidrawAPI) return;
@@ -110,7 +156,23 @@ export default function WhiteboardCanvas() {
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-2">
         <h1 className="font-semibold">Whiteboard</h1>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <select
+            className="input w-auto py-1 text-xs"
+            value={linkedNote}
+            onChange={(e) => linkNote(e.target.value)}
+            title="Link this board to a note"
+          >
+            <option value="">Not linked to a note</option>
+            {notesList.map((n) => (
+              <option key={n._id} value={n._id}>
+                {n.title || "Untitled"}
+              </option>
+            ))}
+          </select>
+          <button className="btn-secondary" onClick={exportPng} disabled={!excalidrawAPI}>
+            Export PNG
+          </button>
           {dirty && <span className="text-xs text-amber-600">Unsaved changes</span>}
           <button className="btn-primary" onClick={save} disabled={saving || !excalidrawAPI}>
             {saving ? "Saving…" : "Save"}

@@ -4,7 +4,7 @@ import { Schema, model, models, type InferSchemaType, type Model } from "mongoos
 const AiCallSchema = new Schema(
   {
     userId: { type: String, required: true, index: true },
-    kind: { type: String, enum: ["summarize", "quiz", "ask"], required: true },
+    kind: { type: String, enum: ["summarize", "quiz", "ask", "askAll", "autotag", "transcribe"], required: true },
   },
   { timestamps: { createdAt: true, updatedAt: false } }
 );

@@ -9,6 +9,7 @@ function meta(wb: { updatedAt?: Date; lastEditedBy?: string; lastClientId?: stri
     updatedAt: wb?.updatedAt ?? null,
     lastEditedBy: wb?.lastEditedBy ?? "",
     lastClientId: wb?.lastClientId ?? "",
+    noteId: (wb as { noteId?: string } | null)?.noteId ?? "",
   };
 }
 
@@ -18,7 +19,7 @@ export const GET = handler(async (req: Request) => {
   const userId = await requireUser();
   const onlyMeta = new URL(req.url).searchParams.has("meta");
   if (onlyMeta) {
-    const wb = await Whiteboard.findOne({ userId }).select("updatedAt lastEditedBy lastClientId").lean();
+    const wb = await Whiteboard.findOne({ userId }).select("updatedAt lastEditedBy lastClientId noteId").lean();
     return NextResponse.json(meta(wb));
   }
   const wb = await Whiteboard.findOne({ userId }).lean();
@@ -41,6 +42,7 @@ export const PUT = handler(async (req: Request) => {
         files: body.files && typeof body.files === "object" ? body.files : {},
         lastEditedBy: await currentUserName(),
         lastClientId: typeof body.clientId === "string" ? body.clientId : "",
+        ...(typeof body.noteId === "string" ? { noteId: body.noteId } : {}),
       },
     },
     { upsert: true, new: true, setDefaultsOnInsert: true }

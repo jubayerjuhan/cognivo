@@ -6,6 +6,7 @@ const TaskSchema = new Schema(
     title: { type: String, required: true },
     dueDate: { type: Date, default: null },
     completed: { type: Boolean, default: false },
+    repeat: { type: String, enum: ["none", "daily", "weekly"], default: "none" },
   },
   { timestamps: true }
 );

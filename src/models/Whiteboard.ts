@@ -10,6 +10,8 @@ const WhiteboardSchema = new Schema(
     lastEditedBy: { type: String, default: "" },
     // Identifies which browser tab performed the last save, so polling can ignore its own saves.
     lastClientId: { type: String, default: "" },
+    // Optional note this board belongs to ("" = workspace board).
+    noteId: { type: String, default: "" },
   },
   { timestamps: true, minimize: false }
 );

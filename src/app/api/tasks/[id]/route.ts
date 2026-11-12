@@ -13,8 +13,17 @@ export const PATCH = handler(async (req: Request, { params }: Ctx) => {
   if (typeof body.title === "string" && body.title.trim()) update.title = body.title.trim();
   if (typeof body.completed === "boolean") update.completed = body.completed;
   if ("dueDate" in body) update.dueDate = body.dueDate || null;
+  if (["none", "daily", "weekly"].includes(body.repeat)) update.repeat = body.repeat;
+  const before = await Task.findOne({ _id: params.id, userId }).lean();
+  if (!before) throw new HttpError(404, "Task not found");
   const task = await Task.findOneAndUpdate({ _id: params.id, userId }, { $set: update }, { new: true });
   if (!task) throw new HttpError(404, "Task not found");
+  // Completing a recurring task spawns the next occurrence.
+  if (body.completed === true && !before.completed && task.repeat !== "none" && task.dueDate) {
+    const next = new Date(task.dueDate);
+    next.setUTCDate(next.getUTCDate() + (task.repeat === "daily" ? 1 : 7));
+    await Task.create({ userId, title: task.title, dueDate: next, repeat: task.repeat });
+  }
   return NextResponse.json(task);
 });
 
