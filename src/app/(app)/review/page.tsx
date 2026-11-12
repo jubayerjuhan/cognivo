@@ -90,17 +90,27 @@ export default function ReviewPage() {
         <div className="h-2 overflow-hidden rounded bg-slate-100">
           <div className="h-full bg-indigo-500 transition-all" style={{ width: `${(done / session.queue.length) * 100}%` }} />
         </div>
-        <button
-          onClick={() => setFlipped((f) => !f)}
-          className={`mt-6 block w-full rounded-2xl border-2 p-8 text-left shadow-sm transition ${
-            flipped ? "border-emerald-300 bg-emerald-50" : "border-indigo-200 bg-indigo-50 hover:bg-indigo-100"
-          }`}
-        >
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            {flipped ? "Answer" : "Question"} · tap to flip
-          </div>
-          <div className="text-lg leading-relaxed">{flipped ? card.answer : card.question}</div>
-        </button>
+        <div className="mt-6 [perspective:1400px]">
+          <button
+            onClick={() => setFlipped((f) => !f)}
+            aria-label={flipped ? "Answer shown — tap to flip back" : "Question shown — tap to reveal the answer"}
+            className="relative block h-72 w-full text-left transition-transform duration-500 [transform-style:preserve-3d]"
+            style={{ transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
+          >
+            <span className="flip-face absolute inset-0 flex flex-col rounded-2xl border-2 border-indigo-200 bg-indigo-50 p-8 shadow-sm">
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Question · tap to flip
+              </span>
+              <span className="block overflow-y-auto text-lg leading-relaxed">{card.question}</span>
+            </span>
+            <span className="flip-face absolute inset-0 flex flex-col rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-8 shadow-sm [transform:rotateY(180deg)]">
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Answer · tap to flip back
+              </span>
+              <span className="block overflow-y-auto text-lg leading-relaxed">{card.answer}</span>
+            </span>
+          </button>
+        </div>
         {flipped ? (
           <div className="mt-4 flex gap-3">
             <button className="btn-danger flex-1 py-2.5" onClick={() => grade("again")} disabled={busy}>

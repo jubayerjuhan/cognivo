@@ -157,3 +157,9 @@ html.dark {
     color: #000 !important;
   }
 }
+
+/* Flashcard 3D flip (review page) */
+.flip-face {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
